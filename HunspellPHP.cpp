@@ -22,10 +22,16 @@ public:
 	Hunspell() = default;
     virtual ~Hunspell() = default;
 
+    Php::Value getEncoding() const
+    {
+    	return encoding;
+    }
+
     void __construct(Php::Parameters &params)
 	{
-    	string aff_path = params[0].stringValue();
-    	string dic_path = params[1].stringValue();
+    	const char * aff_path = params[0];
+    	const char * dic_path = params[1];
+
     	if (!file_exists(aff_path)) {
     		throw Php::Exception("Aff file does not found");
     	}
@@ -34,7 +40,7 @@ public:
     		throw Php::Exception("Dic file does not found");
     	}
 
-    	handle = Hunspell_create(aff_path.c_str(), dic_path.c_str());
+    	handle = Hunspell_create(aff_path, dic_path);
 
     	if (!handle) {
     		throw Php::Exception("Cannot open dictionary");
@@ -46,7 +52,6 @@ public:
     Php::Value spell(Php::Parameters &params)
     {
     	const char * word = params[0];
-
     	return (bool)Hunspell_spell(handle, word);
     }
 
@@ -55,15 +60,22 @@ public:
     	Php::Value result;
     	char **slist;
 
-    	const char * word = params[0].stringValue().c_str();
+    	const char * word = params[0];
     	int num_slist = Hunspell_stem(handle, &slist, word);
 
     	for (int i = 0; i < num_slist; i++) {
     		result[i] = slist[i];
     	}
 
+    	Hunspell_free_list(handle, &slist, num_slist);
     	return result;
     }
+
+    /*Php::Value suggest(Php::Parameters &params)
+    {
+    	Php::Value result;
+    	char **slist;
+    }*/
 };
 
 extern "C" {
@@ -82,6 +94,12 @@ extern "C" {
 		hunspell.method<&Hunspell::spell>("spell", {
 				Php::ByVal("word", Php::Type::String)
 		});
+
+		hunspell.method<&Hunspell::stem>("stem", {
+				Php::ByVal("word", Php::Type::String)
+		});
+
+		hunspell.property("encoding", &Hunspell::getEncoding);
 
 		HunspellExtension.add(std::move(hunspell));
 		return HunspellExtension.module();

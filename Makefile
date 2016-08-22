@@ -4,19 +4,20 @@ UBUNTU_MAJOR  := $(shell /usr/bin/lsb_release -r -s | cut -f1 -d.)
 OVER_SIXTEEN  := $(shell echo "${UBUNTU_MAJOR} >= 16" | bc)
 OVER_FOURTEEN := $(shell echo "${UBUNTU_MAJOR} >= 14" | bc)
 
-ifeq (${OVER_SIXTEEN}, 1)
-    INI_DIR     =   /etc/php/7.0/mods-available/
-else ifeq (${OVER_FOURTEEN}, 1)
-    INI_DIR     =   /etc/php5/mods-available/
-else
-    INI_DIR     =   /etc/php5/conf.d/
-endif
+#ifeq (${OVER_SIXTEEN}, 1)
+#    INI_DIR     =   /etc/php/7.0/mods-available/
+#else ifeq (${OVER_FOURTEEN}, 1)
+#    INI_DIR     =   /etc/php5/mods-available/
+#else
+#    INI_DIR     =   /etc/php5/conf.d/
+#endif
+INI_DIR = /etc/php/7.0/cli/conf.d/
 
-EXTENSION_DIR       =   $(shell php-config --extension-dir)
+EXTENSION_DIR       =   $(shell php-config7.0 --extension-dir)
 
 
 EXTENSION           =   ${NAME}.so
-INI                 =   ${NAME}.ini
+INI                 =   20-${NAME}.ini
 
 COMPILER            =   g++
 LINKER              =   g++
