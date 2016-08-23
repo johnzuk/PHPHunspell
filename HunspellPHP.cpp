@@ -71,11 +71,49 @@ public:
     	return result;
     }
 
-    /*Php::Value suggest(Php::Parameters &params)
+    Php::Value suggest(Php::Parameters &params)
     {
     	Php::Value result;
     	char **slist;
-    }*/
+
+    	const char * word = params[0];
+    	int num_slist = Hunspell_suggest(handle, &slist, word);
+
+    	for (int i = 0; i < num_slist; i++) {
+			result[i] = slist[i];
+		}
+
+		Hunspell_free_list(handle, &slist, num_slist);
+		return result;
+    }
+
+    Php::Value analyze(Php::Parameters &params)
+    {
+    	Php::Value result;
+		char **slist;
+
+		const char * word = params[0];
+		int num_slist = Hunspell_analyze(handle, &slist, word);
+
+		for (int i = 0; i < num_slist; i++) {
+			result[i] = slist[i];
+		}
+
+		Hunspell_free_list(handle, &slist, num_slist);
+		return result;
+    }
+
+    Php::Value add(Php::Parameters &params)
+    {
+    	const char * word = params[0];
+    	return Hunspell_add(handle, word);
+    }
+
+    Php::Value remove(Php::Parameters &params)
+    {
+    	const char * word = params[0];
+    	return Hunspell_remove(handle, word);
+    }
 };
 
 extern "C" {
@@ -96,6 +134,22 @@ extern "C" {
 		});
 
 		hunspell.method<&Hunspell::stem>("stem", {
+				Php::ByVal("word", Php::Type::String)
+		});
+
+		hunspell.method<&Hunspell::suggest>("suggest", {
+				Php::ByVal("word", Php::Type::String)
+		});
+
+		hunspell.method<&Hunspell::analyze>("analyze", {
+				Php::ByVal("word", Php::Type::String)
+		});
+
+		hunspell.method<&Hunspell::add>("add", {
+				Php::ByVal("word", Php::Type::String)
+		});
+
+		hunspell.method<&Hunspell::remove>("remove", {
 				Php::ByVal("word", Php::Type::String)
 		});
 
