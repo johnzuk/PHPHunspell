@@ -16,15 +16,15 @@ inline bool file_exists(const std::string& name) {
 
 class Hunspell : public Php::Base {
 private:
-	Hunhandle * handle = nullptr;
-	const char * encoding = nullptr;
+    Hunhandle * handle = nullptr;
+    const char * encoding = nullptr;
 public:
-	Hunspell() = default;
+    Hunspell() = default;
     virtual ~Hunspell() = default;
 
     Php::Value getEncoding() const
     {
-    	return encoding;
+		return encoding;
     }
 
     void __construct(Php::Parameters &params)
@@ -158,15 +158,5 @@ extern "C" {
 		HunspellExtension.add(std::move(hunspell));
 		return HunspellExtension.module();
 	}
-
-	/*int main() {
-		const char * aff_path = "/usr/share/hunspell/pl_PL.aff";
-		const char * dic_path = "/usr/share/hunspell/pl_PL.dic";
-		//Hunhandle *handle = Hunspell_create(aff_path, dic_path);
-
-		cout << "" << endl; // prints
-		return 0;
-	}*/
-
 }
 
